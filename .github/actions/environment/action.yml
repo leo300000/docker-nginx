@@ -3,20 +3,22 @@ description: 'test'
 outputs:
   monenv:
     description: "mon environnement actuelle"
-    value: ${{ steps.monenvironnement.outputs.lavariable }}
+    value: ${{ steps.monenvironnement.outputs.env }}
 
+runs: 
+  using: 'composite'     
+  steps:
+    - name: trouverenv
+      id: monenvironnement
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+          echo "env=dev" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == "refs/heads/preprod" ]]; then
+          echo "env=preprod" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          echo "env=prod" >> $GITHUB_OUTPUT
+        else
+          echo "env=unknown" >> $GITHUB_OUTPUT
+        fi
 
-steps:
-  - name: trouverenv
-    id: monenvironnement
-    run: |
-      if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-        echo "env=dev" >> $GITHUB_OUTPUT
-      elif [ "${{ github.ref }}" == "refs/heads/preprod" ]; then
-        echo "env=preprod" >> $GITHUB_OUTPUT
-      elif [ "${{ github.ref }}" == "refs/heads/prod" ]; then
-        echo "env=prod" >> $GITHUB_OUTPUT
-
-    shell: bash
-
-
+      shell: bash
